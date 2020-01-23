@@ -62,8 +62,8 @@ class OrderPortTest {
     @Test
     void createCorrectFields() {
 
-        OrderDto orderDto = new OrderDto(UUID.randomUUID(), LocalDateTime.now(), BigDecimal.TEN, "USD", Collections.emptyList());
-        Order order = new Order(LocalDateTime.now(), BigDecimal.TEN, "USD", Collections.emptyList());
+        OrderDto orderDto = new OrderDto(UUID.randomUUID(), LocalDateTime.now(), BigDecimal.TEN, "USD", "email", Collections.emptyList());
+        Order order = new Order(LocalDateTime.now(), BigDecimal.TEN, "USD", "email", Collections.emptyList());
         Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order);
 
         orderPort.create(orderDto);
@@ -73,24 +73,7 @@ class OrderPortTest {
         Order argOrder = orderCaptor.getValue();
 
         Assert.assertEquals(argOrder.getCurrency(), orderDto.getCurrency());
-        Assert.assertEquals(argOrder.getPrice().doubleValue(), orderDto.getPrice().doubleValue(), 1.0);
-        Assert.assertEquals(argOrder.getPlacedDate(), orderDto.getPlacedDate());
-    }
-
-    @Test
-    void createCorrectFields() {
-
-        OrderDto orderDto = new OrderDto(UUID.randomUUID(), LocalDateTime.now(), BigDecimal.TEN, CURRENCY, MAIL, Collections.emptyList());
-        Order order = new Order(LocalDateTime.now(), BigDecimal.TEN, CURRENCY, MAIL, Collections.emptyList());
-        Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order);
-
-        orderPort.create(orderDto);
-
-        Mockito.verify(orderRepository).save(orderCaptor.capture());
-
-        Order argOrder = orderCaptor.getValue();
-
-        Assert.assertEquals(argOrder.getCurrency(), orderDto.getCurrency());
+        Assert.assertEquals(argOrder.getEmail(), orderDto.getEmail());
         Assert.assertEquals(argOrder.getPrice().doubleValue(), orderDto.getPrice().doubleValue(), 1.0);
         Assert.assertEquals(argOrder.getPlacedDate(), orderDto.getPlacedDate());
     }
