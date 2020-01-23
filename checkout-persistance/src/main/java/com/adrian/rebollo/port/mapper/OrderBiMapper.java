@@ -17,6 +17,7 @@ public class OrderBiMapper implements BiMapper<Order, OrderDto> {
         return new Order(orderDto.getPlacedDate(),
                 orderDto.getPrice(),
                 orderDto.getCurrency(),
+                orderDto.getEmail(),
                 orderDto.getProductList().stream().map(productDto -> new ProductDetail(productDto.getId(), productDto.getName(), productDto.getPrice(), productDto.getCurrency())).collect(Collectors.toList()));
     }
 
@@ -27,6 +28,7 @@ public class OrderBiMapper implements BiMapper<Order, OrderDto> {
                 .placedDate(order.getPlacedDate())
                 .price(order.getPrice())
                 .currency(order.getCurrency())
+                .email(order.getEmail())
                 .productList(order.getProductList().stream().map(productDetail -> new ExistingProductDto(productDetail.getId(), productDetail.getName(), productDetail.getPrice().doubleValue(), productDetail.getCurrency())).collect(Collectors.toList()))
                 .build();
     }

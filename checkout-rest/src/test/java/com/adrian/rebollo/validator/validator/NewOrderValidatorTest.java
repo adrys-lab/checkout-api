@@ -21,6 +21,8 @@ import com.adrian.rebollo.validator.annotation.ValidNewOrder;
 
 public class NewOrderValidatorTest {
 
+    private static final String EMAIL = "adrian@rebollo.com";
+
     @InjectMocks
     private NewOrderValidator newOrderValidator;
 
@@ -40,7 +42,7 @@ public class NewOrderValidatorTest {
 
     @Test
     public void assertInvalidWhenEmpty() {
-        NewOrderDto newOrderDto = new NewOrderDto("EUR", Collections.emptyList());
+        NewOrderDto newOrderDto = new NewOrderDto("EUR", EMAIL, Collections.emptyList());
         Assert.assertFalse(newOrderValidator.isValid(newOrderDto, constraintValidatorContext));
     }
 
@@ -52,14 +54,14 @@ public class NewOrderValidatorTest {
 
     @Test
     public void assertInvalidWhenNull() {
-        NewOrderDto newOrderDto = new NewOrderDto("EUR", null);
+        NewOrderDto newOrderDto = new NewOrderDto("EUR", EMAIL, null);
         Assert.assertFalse(newOrderValidator.isValid(newOrderDto, constraintValidatorContext));
     }
 
     @Test
     public void assertCallsCurrencyValidator() {
         final String currency = "NaN";
-        NewOrderDto newOrderDto = new NewOrderDto(currency, Collections.singletonList(UUID.randomUUID()));
+        NewOrderDto newOrderDto = new NewOrderDto(currency, EMAIL, Collections.singletonList(UUID.randomUUID()));
 
         newOrderValidator.isValid(newOrderDto, constraintValidatorContext);
 
@@ -69,7 +71,7 @@ public class NewOrderValidatorTest {
     @Test
     public void assertIsValid() {
         final String currency = "USD";
-        NewOrderDto newOrderDto = new NewOrderDto(currency, Collections.singletonList(UUID.randomUUID()));
+        NewOrderDto newOrderDto = new NewOrderDto(currency, EMAIL, Collections.singletonList(UUID.randomUUID()));
 
         Mockito.when(currencyValidator.isValid(currency, constraintValidatorContext)).thenReturn(true);
 

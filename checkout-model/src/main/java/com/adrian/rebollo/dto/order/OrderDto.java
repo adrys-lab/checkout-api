@@ -29,6 +29,7 @@ public class OrderDto implements Serializable {
 
     private BigDecimal price;
     private String currency;
+    private String email;
 
     private List<ExistingProductDto> productList;
 }

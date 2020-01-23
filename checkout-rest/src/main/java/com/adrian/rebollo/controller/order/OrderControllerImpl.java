@@ -39,7 +39,7 @@ public class OrderControllerImpl extends HomeController implements OrderControll
     @Override
     public Resource<OrderDto> create(final NewOrderDto newOrderDto) {
         final List<ExistingProductDto> products = productService.get(newOrderDto.getProductList()).orElseThrow(() -> new UnexistingProduct(newOrderDto.getProductList()));
-        return new Resource<>(orderService.create(products, newOrderDto.getCurrency()).orElseThrow(() -> new ExceptionCreateOrder(newOrderDto)));
+        return new Resource<>(orderService.create(products, newOrderDto).orElseThrow(() -> new ExceptionCreateOrder(newOrderDto)));
     }
 
     @Override

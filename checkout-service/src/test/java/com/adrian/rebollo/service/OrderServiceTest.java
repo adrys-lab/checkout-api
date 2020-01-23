@@ -1,6 +1,7 @@
 package com.adrian.rebollo.service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.adrian.rebollo.OrderService;
 import com.adrian.rebollo.OrderServiceImpl;
+import com.adrian.rebollo.dto.order.NewOrderDto;
 import com.adrian.rebollo.dto.order.OrderDto;
 import com.adrian.rebollo.dto.product.ExistingProductDto;
 import com.adrian.rebollo.port.OrderPort;
@@ -43,10 +45,11 @@ public class OrderServiceTest {
     public void calculateTotalTest() {
 
         final String currency = "USD";
-
+        final String email = "adrian@rebollo.com";
+        NewOrderDto newOrderDto = new NewOrderDto(currency, email, Collections.emptyList());
         final List<ExistingProductDto> products = Arrays.asList(prodUSD, prod2USD);
 
-        orderService.create(products, currency);
+        orderService.create(products, newOrderDto);
 
         Mockito.verify(orderPort).create(orderCaptor.capture());
 

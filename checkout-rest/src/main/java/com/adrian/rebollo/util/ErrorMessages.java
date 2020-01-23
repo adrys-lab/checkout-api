@@ -8,6 +8,7 @@ public enum ErrorMessages {
     CURRENCY_BLANK("Currency Could not be Blank."),
     CURRENCY_NOT_EXISTS("Currency param does not exist."),
     ORDER_PRODUCTS_EMPTY("Order could not contain empty product lists."),
+    ORDER_MAIL_EMPTY("Order could not contain empty or incorrect email."),
     ;
 
     private final String message;

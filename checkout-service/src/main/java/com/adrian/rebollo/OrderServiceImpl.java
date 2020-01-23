@@ -13,8 +13,10 @@ import javax.money.convert.MonetaryConversions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adrian.rebollo.dto.order.NewOrderDto;
 import com.adrian.rebollo.dto.order.OrderDto;
 import com.adrian.rebollo.dto.product.ExistingProductDto;
 import com.adrian.rebollo.port.OrderPort;
@@ -29,15 +31,17 @@ public class OrderServiceImpl implements OrderService {
         this.orderPort = orderPort;
     }
 
-    @Transactional
-    public Optional<OrderDto> create(final List<ExistingProductDto> products, final String currency) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Optional<OrderDto> create(final List<ExistingProductDto> products, final NewOrderDto newOrderDto) {
 
-        final BigDecimal totalInOrderCurrency = getPriceInOrderCurrency(products, currency);
+        final String orderCurrency = newOrderDto.getCurrency();
+        final BigDecimal totalInOrderCurrency = getPriceInOrderCurrency(products, orderCurrency);
 
         final OrderDto orderDto = OrderDto.builder()
                 .placedDate(LocalDateTime.now())
                 .price(totalInOrderCurrency)
-                .currency(currency)
+                .currency(orderCurrency)
+                .email(newOrderDto.getEmail())
                 .productList(products.stream().map(productDetail -> new ExistingProductDto(productDetail.getId(), productDetail.getName(), productDetail.getPrice(), productDetail.getCurrency())).collect(Collectors.toList()))
                 .build();
 

@@ -16,5 +16,6 @@ import lombok.NoArgsConstructor;
 public class NewOrderDto implements Serializable {
 
     private String currency;
+    private String email;
     private List<UUID> productList;
 }

@@ -50,7 +50,7 @@ class OrderPriceConsistencyE2E {
         firstProduct = productRepository.saveAndFlush(firstProduct);
         originalSecondProduct = productRepository.saveAndFlush(originalSecondProduct);
 
-        Resource<OrderDto> firstOrder = orderController.create(new NewOrderDto("EUR", Arrays.asList(firstProduct.getId(), originalSecondProduct.getId())));
+        Resource<OrderDto> firstOrder = orderController.create(new NewOrderDto("EUR", "email", Arrays.asList(firstProduct.getId(), originalSecondProduct.getId())));
 
         assertNotNull(firstOrder.getContent());
 

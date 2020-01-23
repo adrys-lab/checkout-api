@@ -156,6 +156,12 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>6.0.13.Final</version>
             </dependency>
+            <!-- Commons Validators -->
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>1.4.1</version>
+            </dependency>
             <!-- include Hibernate Types -->
             <dependency>
                 <groupId>com.vladmihalcea</groupId>

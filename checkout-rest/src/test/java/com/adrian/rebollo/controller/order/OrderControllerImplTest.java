@@ -39,22 +39,22 @@ class OrderControllerImplTest {
 
     @Test
     void createWithUnexistingProductThrows() {
-        final NewOrderDto newOrderDto = new NewOrderDto("USD", Collections.singletonList(UUID.randomUUID()));
+        final NewOrderDto newOrderDto = new NewOrderDto("USD", "email", Collections.singletonList(UUID.randomUUID()));
         assertThrows(UnexistingProduct.class, () -> orderController.create(newOrderDto));
     }
 
     @Test
     void whenExistingProductCallsWithThem() {
 
-        final NewOrderDto newOrderDto = new NewOrderDto("USD", Collections.singletonList(UUID.randomUUID()));
+        final NewOrderDto newOrderDto = new NewOrderDto("USD", "email", Collections.singletonList(UUID.randomUUID()));
 
         final List<ExistingProductDto> existingProducts = Collections.singletonList(new ExistingProductDto());
         Mockito.when(productService.get(newOrderDto.getProductList())).thenReturn(Optional.of(existingProducts));
-        Mockito.when(orderService.create(Mockito.anyList(), Mockito.anyString())).thenReturn(Optional.of(new OrderDto()));
+        Mockito.when(orderService.create(Mockito.anyList(), Mockito.any(NewOrderDto.class))).thenReturn(Optional.of(new OrderDto()));
 
         orderController.create(newOrderDto);
 
-        Mockito.verify(orderService).create(existingProducts, newOrderDto.getCurrency());
+        Mockito.verify(orderService).create(existingProducts, newOrderDto);
 
     }
 

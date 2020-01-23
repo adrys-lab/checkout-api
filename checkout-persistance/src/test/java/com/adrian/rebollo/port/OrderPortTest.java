@@ -28,6 +28,8 @@ import com.adrian.rebollo.repository.OrderRepository;
 class OrderPortTest {
 
     private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final String CURRENCY = "EUR";
+    private static final String MAIL = "mail@mail.com";
 
     private static final int CHUNK = 20;
     private OrderPort orderPort;
@@ -62,6 +64,24 @@ class OrderPortTest {
 
         OrderDto orderDto = new OrderDto(UUID.randomUUID(), LocalDateTime.now(), BigDecimal.TEN, "USD", Collections.emptyList());
         Order order = new Order(LocalDateTime.now(), BigDecimal.TEN, "USD", Collections.emptyList());
+        Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order);
+
+        orderPort.create(orderDto);
+
+        Mockito.verify(orderRepository).save(orderCaptor.capture());
+
+        Order argOrder = orderCaptor.getValue();
+
+        Assert.assertEquals(argOrder.getCurrency(), orderDto.getCurrency());
+        Assert.assertEquals(argOrder.getPrice().doubleValue(), orderDto.getPrice().doubleValue(), 1.0);
+        Assert.assertEquals(argOrder.getPlacedDate(), orderDto.getPlacedDate());
+    }
+
+    @Test
+    void createCorrectFields() {
+
+        OrderDto orderDto = new OrderDto(UUID.randomUUID(), LocalDateTime.now(), BigDecimal.TEN, CURRENCY, MAIL, Collections.emptyList());
+        Order order = new Order(LocalDateTime.now(), BigDecimal.TEN, CURRENCY, MAIL, Collections.emptyList());
         Mockito.when(orderRepository.save(Mockito.any())).thenReturn(order);
 
         orderPort.create(orderDto);

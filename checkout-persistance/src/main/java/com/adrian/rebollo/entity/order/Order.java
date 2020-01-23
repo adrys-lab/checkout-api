@@ -36,15 +36,19 @@ public class Order extends PersistedEntity {
     @Column(name = "currency", updatable = false, nullable = false)
     private String currency;
 
+    @Column(name = "email", updatable = false, nullable = false, unique = true)
+    private String email;
+
     @Type(type = "jsonb")
     @Column(name = "product_list", columnDefinition = "jsonb", updatable = false, nullable = false)
     private List<ProductDetail> productList;
 
-    public Order(final LocalDateTime placedDate, final BigDecimal price, String currency, final List<ProductDetail> productList) {
+    public Order(final LocalDateTime placedDate, final BigDecimal price, String currency, String email, final List<ProductDetail> productList) {
         super(0);
         this.placedDate = placedDate;
         this.price = price;
         this.currency = currency;
+        this.email = email;
         this.productList = productList;
     }
 }

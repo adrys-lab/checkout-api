@@ -63,7 +63,7 @@ class CreateOrdeerIT {
         String productId = productResponse.substring(productResponse.lastIndexOf("/") + 1);
 
         final List<UUID> productIds = Collections.singletonList(UUID.fromString(productId));
-        final NewOrderDto newOrder = new NewOrderDto("EUR", productIds);
+        final NewOrderDto newOrder = new NewOrderDto("EUR", "email@email.com", productIds);
 
         final String orderResponse = mockMvc.perform(MockMvcRequestBuilders.post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,6 +72,10 @@ class CreateOrdeerIT {
                 .andReturn().getResponse().getContentAsString();
 
         final OrderDto order = objectMapper.readValue(orderResponse, OrderDto.class);
+
+        Assert.assertEquals(50.0, order.getPrice().doubleValue(), 1.0);
+        Assert.assertEquals(newOrder.getEmail(), order.getEmail());
+        Assert.assertEquals(newOrder.getCurrency(), order.getCurrency());
 
         String ordersByDate = mockMvc.perform(MockMvcRequestBuilders.get("/order/2020-01-01T22:30:22"))
                 .andExpect(status().isOk())

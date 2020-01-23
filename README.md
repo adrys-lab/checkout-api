@@ -75,7 +75,7 @@
     * currencies must exist and have 3 digits (EUR, USD, CHF....)
     * timePeriod must be before `currentDate`
     * a new Product could not be null, and all its fields are required (name not null/empty, price > 0 and a valid currency).
-    * a new Order must contain a list (not null nor empty) of existing Product IDs, and a valid Currency.
+    * a new Order must contain a list (not null nor empty) of existing Product IDs, and a valid Currency and not empty/blank and valid email.
         * Validations have been achieved through Javax.Validation:
             * see `com.adrian.rebollo.validator.*`
     
