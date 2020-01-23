@@ -1,0 +1,14 @@
+[
+  {
+    "productCode": "TSHIRT",
+    "discountId": 1,
+    "discountModel" : {
+      "discount": 1.00,
+      "size": 3
+    }
+  },
+  {
+    "productCode": "VOUCHER",
+    "discountId": 2
+  }
+]

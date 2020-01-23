@@ -1,0 +1,1 @@
+CREATE INDEX orders_placedDate_idx ON orders(placed_date);

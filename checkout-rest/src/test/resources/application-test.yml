@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: "/checkout-api"
+
+# JACKSON #
+spring:
+  jackson:
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      INDENT_OUTPUT: true
+
+#Platform Context Configuration Params
+config:
+  store:
+    fileName: store.json
+  price:
+    fileName: discounts.json
+
+#Platform Context#
+logging.level.org.springframework.security: DEBUG
+logging.level.io.swagger.api: DEBUG
+logging.level.io.swagger.models.parameters.AbstractSerializableParameter: ERROR
+
+#Spring context
+
+#--PLATFORM--#
+spring.application.name: Checkout API- Adrian Rebollo
