@@ -11,7 +11,7 @@
     </parent>
 
     <description>
-        This module contains all the application configuration and bootstrapping.
+        This module contains all the application models and DTOs.
     </description>
 
     <artifactId>checkout-model</artifactId>

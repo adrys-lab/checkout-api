@@ -27,6 +27,11 @@
     * Retrieving all orders within a given time period
 
 
+## API environments
+* Api have to work with an environment `.env` file.
+* Usually i would not commit that file but it will help to build and bootstrap for non-devs (reviewers).
+
+
 ## API decisions
 * I tried to follow principles described at level 3 of the Richardson Maturity Model (Restful + HATEOAS) trying to re-use API Resources.
 * Maven multi-module API self-explained in each pom.
@@ -205,6 +210,11 @@
 * `docker-compose -f ./checkout-api/docker-compose-built.yml build`
 * `docker-compose -f ./checkout-api/docker-compose-built.yml up`
 
+* Obtain Logs.
+* `docker container ls`
+* `docker cp <container_id>:/var/log /anypath`
+    * by default logs are placed based on config property `logback.logs.folder: /var/log/checkout-api`
+
 ## Usage
 * deploy application and go to:
     * `http://localhost:8080`
@@ -218,6 +228,6 @@
     * `./.travis.yml`
 
 * Url of CI:
-    * `https://travis-ci.com/adrys-lab/checkout-api`
+    * `https://travis-ci.com/adrys-lab/checkout-api/builds`
     
-![Travis](./pics/travis.png?raw=false "Travis")
+![Travis](./pic/travis.png?raw=false "Travis")
