@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.adrian.rebollo.dto.order.NewOrderDto;
 import com.adrian.rebollo.validator.annotation.ValidNewOrder;
@@ -41,6 +42,12 @@ public class NewOrderValidatorTest {
     public void assertInvalidWhenEmpty() {
         NewOrderDto newOrderDto = new NewOrderDto("EUR", Collections.emptyList());
         Assert.assertFalse(newOrderValidator.isValid(newOrderDto, constraintValidatorContext));
+    }
+
+    @Test
+    public void initsWell() {
+        NewOrderValidator validator = new NewOrderValidator();
+        Assert.assertNotNull(ReflectionTestUtils.getField(validator, "currencyValidator"));
     }
 
     @Test

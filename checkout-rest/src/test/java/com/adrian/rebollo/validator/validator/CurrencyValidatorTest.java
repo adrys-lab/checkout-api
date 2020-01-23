@@ -39,6 +39,15 @@ public class CurrencyValidatorTest {
     }
 
     @Test
+    public void assertInvalidWhenNull() {
+        Assert.assertFalse(currencyValidator.isValid(null, constraintValidatorContext));
+    }
+
+    public void assertInvalidWhenBlank() {
+        Assert.assertFalse(currencyValidator.isValid("", constraintValidatorContext));
+    }
+
+    @Test
     public void assertValid() {
         Assert.assertTrue(currencyValidator.isValid("EUR", constraintValidatorContext));
     }

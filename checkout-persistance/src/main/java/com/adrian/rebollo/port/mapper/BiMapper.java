@@ -22,12 +22,6 @@ public interface BiMapper<K, T> {
      */
     T toDomain(K entity);
 
-
-    default Optional<K> toEntity(Optional<T> domain) {
-        return domain.map(this::toEntity)
-                .or(Optional::empty);
-    }
-
     /**
      * @param domain to map as entity
      *

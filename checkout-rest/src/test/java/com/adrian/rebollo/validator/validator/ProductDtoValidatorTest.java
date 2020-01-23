@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.adrian.rebollo.dto.product.ProductDto;
 import com.adrian.rebollo.validator.annotation.ValidProductDto;
@@ -34,6 +35,12 @@ public class ProductDtoValidatorTest {
         MockitoAnnotations.initMocks(this);
         productDtoValidator.initialize(validProductDto);
         constraintValidatorContext = new ConstraintValidatorContextImpl(Collections.emptyList(), DefaultClockProvider.INSTANCE, PathImpl.createRootPath(), Mockito.mock(ConstraintDescriptor.class), new Object());
+    }
+
+    @Test
+    public void initsWell() {
+        ProductDtoValidator validator = new ProductDtoValidator();
+        Assert.assertNotNull(ReflectionTestUtils.getField(validator, "currencyValidator"));
     }
 
     @Test

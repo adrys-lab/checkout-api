@@ -388,23 +388,21 @@
                         </goals>
                         <configuration>
                             <rules>
+                                <!-- Coverage per bundle at 30% instructions -->
                                 <rule implementation="org.jacoco.maven.RuleConfiguration">
                                     <element>BUNDLE</element>
                                     <limits>
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.60</minimum>
-                                        </limit>
-                                        <limit implementation="org.jacoco.report.check.Limit">
-                                            <counter>CLASS</counter>
-                                            <value>MISSEDCOUNT</value>
-                                            <maximum>0</maximum>
+                                            <minimum>0.30</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
+                                <!-- Coverage per module at 50% Lines -->
+                                <!-- Coverage per module at 50% Methods -->
                                 <rule>
-                                    <element>CLASS</element>
+                                    <element>GROUP</element>
                                     <excludes>
                                         <exclude>*Test</exclude>
                                     </excludes>
@@ -412,7 +410,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.60</minimum>
+                                            <minimum>50%</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>METHOD</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>50%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

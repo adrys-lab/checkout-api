@@ -17,10 +17,8 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
-@ToString
 @Entity
 @Table(name = "orders")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
