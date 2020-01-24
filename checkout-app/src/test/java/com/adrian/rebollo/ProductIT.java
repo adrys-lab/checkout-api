@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.adrian.rebollo.dto.product.ProductDto;
+import com.adrian.rebollo.error.validation.FieldError;
+import com.adrian.rebollo.error.validation.ValidationError;
+import com.adrian.rebollo.util.ErrorMessages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -27,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(PostgresContainerExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(classes = TestConfiguration.class, initializers = { PostgresContainerExtension.Initializer.class })
-class CreateProductIT {
+class ProductIT {
 
     @Autowired
     private WebApplicationContext wac;
@@ -76,6 +79,36 @@ class CreateProductIT {
         final ProductDto readProduct = objectMapper.readValue(response, ProductDto.class);
 
         Assert.assertEquals(readProduct, introducedProduct);
+    }
+
+    @Test
+    @DirtiesContext
+    void newOrderValidationByCurrency() throws Exception {
+
+        final ProductDto productDto = new ProductDto("", 3.0, "EUR");
+
+        String orderResponse = mockMvc.perform(MockMvcRequestBuilders.post("/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(productDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertNotNull(orderResponse);
+
+        assertValidation(orderResponse, ErrorMessages.PRODUCT_NAME_BLANK.getMessage());
+    }
+
+    private void assertValidation(String orderResponse, String msg) throws com.fasterxml.jackson.core.JsonProcessingException {
+        ValidationError validationError = objectMapper.readValue(orderResponse, ValidationError.class);
+
+        Assert.assertNotNull(validationError);
+
+        Assert.assertEquals(1, validationError.getErrors().size());
+
+        FieldError fieldError = validationError.getErrors().get(0);
+
+        Assert.assertEquals(400, fieldError.getCode().intValue());
+        Assert.assertEquals(msg, fieldError.getMessage());
     }
 }
 

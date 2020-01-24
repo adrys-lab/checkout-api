@@ -2,6 +2,8 @@ package com.adrian.rebollo;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,10 @@ import org.springframework.web.context.WebApplicationContext;
 import com.adrian.rebollo.dto.order.NewOrderDto;
 import com.adrian.rebollo.dto.order.OrderDto;
 import com.adrian.rebollo.dto.product.ProductDto;
+import com.adrian.rebollo.error.validation.FieldError;
+import com.adrian.rebollo.error.validation.ValidationError;
+import com.adrian.rebollo.util.ErrorMessages;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -33,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(PostgresContainerExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(classes = TestConfiguration.class, initializers = { PostgresContainerExtension.Initializer.class })
-class CreateOrdeerIT {
+class OrderIT {
 
     @Autowired
     private WebApplicationContext wac;
@@ -82,5 +88,84 @@ class CreateOrdeerIT {
                 .andReturn().getResponse().getContentAsString();
 
         Assert.assertNotNull(ordersByDate);
+    }
+
+    @Test
+    @DirtiesContext
+    void newOrderValidationByCurrency() throws Exception {
+
+        final NewOrderDto newOrderDto = new NewOrderDto("NaN", "adria@adria.com", Collections.singletonList(UUID.randomUUID()));
+
+        String orderResponse = mockMvc.perform(MockMvcRequestBuilders.post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(newOrderDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertNotNull(orderResponse);
+
+        assertValidation(orderResponse, ErrorMessages.CURRENCY_NOT_EXISTS.getMessage());
+    }
+
+    @Test
+    @DirtiesContext
+    void newOrderValidationByMail() throws Exception {
+
+        final NewOrderDto newOrderDto = new NewOrderDto("EUR", "incorrectMail", Collections.singletonList(UUID.randomUUID()));
+
+        String orderResponse = mockMvc.perform(MockMvcRequestBuilders.post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(newOrderDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertNotNull(orderResponse);
+
+        assertValidation(orderResponse, ErrorMessages.ORDER_MAIL_EMPTY.getMessage());
+    }
+
+    @Test
+    @DirtiesContext
+    void newOrderValidationByEmptyList() throws Exception {
+
+        final NewOrderDto newOrderDto = new NewOrderDto("EUR", "arm@arm.com", Collections.emptyList());
+
+        String orderResponse = mockMvc.perform(MockMvcRequestBuilders.post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(newOrderDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertNotNull(orderResponse);
+
+        assertValidation(orderResponse, ErrorMessages.ORDER_PRODUCTS_EMPTY.getMessage());
+    }
+
+    @Test
+    @DirtiesContext
+    void getOrderValidationByTimePeriod() throws Exception {
+
+        final LocalDateTime timePeriod = LocalDateTime.MAX;
+        final String stringDate = timePeriod.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+        String orderResponse = mockMvc.perform(MockMvcRequestBuilders.get("/order/" + stringDate))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        Assert.assertNotNull(orderResponse);
+
+        assertValidation(orderResponse, ErrorMessages.ORDER_DATE_INVALID.getMessage());
+    }
+
+    private void assertValidation(String orderResponse, String msg) throws JsonProcessingException {
+        final ValidationError validationError = objectMapper.readValue(orderResponse, ValidationError.class);
+
+        Assert.assertNotNull(validationError);
+        Assert.assertEquals(1, validationError.getErrors().size());
+
+        final FieldError fieldError = validationError.getErrors().get(0);
+
+        Assert.assertEquals(400, fieldError.getCode().intValue());
+        Assert.assertEquals(msg, fieldError.getMessage());
     }
 }

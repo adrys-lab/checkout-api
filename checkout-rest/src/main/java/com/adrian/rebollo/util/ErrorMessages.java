@@ -9,6 +9,7 @@ public enum ErrorMessages {
     CURRENCY_NOT_EXISTS("Currency param does not exist."),
     ORDER_PRODUCTS_EMPTY("Order could not contain empty product lists."),
     ORDER_MAIL_EMPTY("Order could not contain empty or incorrect email."),
+    ORDER_DATE_INVALID("The given Time Period must Not be null nor After current date."),
     ;
 
     private final String message;

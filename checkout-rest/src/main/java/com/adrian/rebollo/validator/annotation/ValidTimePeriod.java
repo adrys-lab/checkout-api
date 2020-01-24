@@ -17,7 +17,7 @@ import com.adrian.rebollo.validator.validator.TimePeriodValidator;
 @Retention(RUNTIME)
 @Constraint(validatedBy = TimePeriodValidator.class )
 public @interface ValidTimePeriod {
-    String message() default "The given Time Period must Not be null nor After current date.";
+    String message() default "";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default {};
 }
