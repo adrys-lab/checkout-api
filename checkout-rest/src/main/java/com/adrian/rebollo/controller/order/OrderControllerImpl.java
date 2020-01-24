@@ -2,6 +2,7 @@ package com.adrian.rebollo.controller.order;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,8 +39,14 @@ public class OrderControllerImpl extends HomeController implements OrderControll
 
     @Override
     public Resource<OrderDto> create(final NewOrderDto newOrderDto) {
-        final List<ExistingProductDto> products = productService.get(newOrderDto.getProductList()).orElseThrow(() -> new UnexistingProduct(newOrderDto.getProductList()));
-        return new Resource<>(orderService.create(products, newOrderDto).orElseThrow(() -> new ExceptionCreateOrder(newOrderDto)));
+        final Optional<List<ExistingProductDto>> products = productService.get(newOrderDto.getProductList());
+
+        if(products.isEmpty() || products.get().size() != newOrderDto.getProductList().size()) {
+            //whether no given product exists or just some of them (all given must exist.)
+            throw new UnexistingProduct(newOrderDto.getProductList());
+        }
+
+        return new Resource<>(orderService.create(products.get(), newOrderDto).orElseThrow(() -> new ExceptionCreateOrder(newOrderDto)));
     }
 
     @Override

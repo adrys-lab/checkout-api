@@ -32,8 +32,6 @@
         <apache.commons.lang.version>3.5</apache.commons.lang.version>
         <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
         <testcontainers.version>1.11.4</testcontainers.version>
-        <dockerfile.maven.plugin.version>1.4.7</dockerfile.maven.plugin.version>
-        <javax.activation.version>1.1.1</javax.activation.version>
         <skipTests>false</skipTests>
         <skipITTests>true</skipITTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>

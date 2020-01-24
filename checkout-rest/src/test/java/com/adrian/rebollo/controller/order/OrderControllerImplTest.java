@@ -3,6 +3,7 @@ package com.adrian.rebollo.controller.order;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,18 @@ class OrderControllerImplTest {
         orderController.create(newOrderDto);
 
         Mockito.verify(orderService).create(existingProducts, newOrderDto);
+    }
 
+    @Test
+    void whenSomeExistingAndSomeNotThrows() {
+
+        final NewOrderDto newOrderDto = new NewOrderDto("USD", "email", Collections.singletonList(UUID.randomUUID()));
+
+        final List<ExistingProductDto> existingProducts = Arrays.asList(new ExistingProductDto(), new ExistingProductDto());
+
+        Mockito.when(productService.get(newOrderDto.getProductList())).thenReturn(Optional.of(existingProducts));
+
+        assertThrows(UnexistingProduct.class, () -> orderController.create(newOrderDto));
     }
 
     @Test
