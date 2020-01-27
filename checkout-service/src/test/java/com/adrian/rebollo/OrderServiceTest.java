@@ -1,5 +1,8 @@
-package com.adrian.rebollo.service;
+package com.adrian.rebollo;
 
+import static org.mockito.ArgumentMatchers.eq;
+
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,15 +18,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.adrian.rebollo.OrderService;
-import com.adrian.rebollo.OrderServiceImpl;
 import com.adrian.rebollo.dto.order.NewOrderDto;
 import com.adrian.rebollo.dto.order.OrderDto;
 import com.adrian.rebollo.dto.product.ExistingProductDto;
 import com.adrian.rebollo.port.OrderPort;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceTest {
+class OrderServiceTest {
 
     private final ExistingProductDto prodUSD = new ExistingProductDto(UUID.randomUUID(), "", 5.0, "USD");
     private final ExistingProductDto prod2USD = new ExistingProductDto(UUID.randomUUID(), "", 5.0, "USD");
@@ -32,30 +33,35 @@ public class OrderServiceTest {
 
     @Mock
     private OrderPort orderPort;
+    @Mock
+    private OrderPriceCalculator orderPriceCalculator;
 
     @Captor
     private ArgumentCaptor<OrderDto> orderCaptor;
 
     @BeforeEach
-    public void init() {
-        orderService = new OrderServiceImpl(orderPort);
+    void init() {
+        orderService = new OrderServiceImpl(orderPort, orderPriceCalculator);
     }
 
     @Test
-    public void calculateTotalTest() {
+    void testCreate() {
 
         final String currency = "USD";
         final String email = "adrian@rebollo.com";
-        NewOrderDto newOrderDto = new NewOrderDto(currency, email, Collections.emptyList());
+        final NewOrderDto newOrderDto = new NewOrderDto(currency, email, Collections.emptyList());
         final List<ExistingProductDto> products = Arrays.asList(prodUSD, prod2USD);
+
+        Mockito.when(orderPriceCalculator.calculatePriceInOrderCurrency(eq(products), eq(currency))).thenReturn(BigDecimal.TEN);
 
         orderService.create(products, newOrderDto);
 
+        Mockito.verify(orderPriceCalculator).calculatePriceInOrderCurrency(products, currency);
         Mockito.verify(orderPort).create(orderCaptor.capture());
 
         final OrderDto orderParam = orderCaptor.getValue();
 
-        Assert.assertEquals(orderParam.getCurrency(), currency);
-        Assert.assertEquals(orderParam.getPrice().doubleValue(), 10.0, 0);
+        Assert.assertEquals(currency, orderParam.getCurrency());
+        Assert.assertEquals(10.0, orderParam.getPrice().doubleValue(), 0);
     }
 }

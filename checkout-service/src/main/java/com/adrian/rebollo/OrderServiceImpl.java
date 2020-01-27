@@ -1,17 +1,15 @@
 package com.adrian.rebollo;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.money.Monetary;
-import javax.money.convert.CurrencyConversion;
-import javax.money.convert.MonetaryConversions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,48 +22,45 @@ import com.adrian.rebollo.port.OrderPort;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final OrderPort orderPort;
+    private final OrderPriceCalculator orderPriceCalculator;
 
     @Autowired
-    public OrderServiceImpl(final OrderPort orderPort) {
+    public OrderServiceImpl(final OrderPort orderPort, final OrderPriceCalculator orderPriceCalculator) {
         this.orderPort = orderPort;
+        this.orderPriceCalculator = orderPriceCalculator;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<OrderDto> create(final List<ExistingProductDto> products, final NewOrderDto newOrderDto) {
 
         final String orderCurrency = newOrderDto.getCurrency();
-        final BigDecimal totalInOrderCurrency = getPriceInOrderCurrency(products, orderCurrency);
+        final BigDecimal totalInOrderCurrency = orderPriceCalculator.calculatePriceInOrderCurrency(products, orderCurrency);
 
         final OrderDto orderDto = OrderDto.builder()
                 .placedDate(LocalDateTime.now())
                 .price(totalInOrderCurrency)
                 .currency(orderCurrency)
                 .email(newOrderDto.getEmail())
-                .productList(products.stream().map(productDetail -> new ExistingProductDto(productDetail.getId(), productDetail.getName(), productDetail.getPrice(), productDetail.getCurrency())).collect(Collectors.toList()))
+                .productList(products)
                 .build();
 
         return orderPort.create(orderDto);
     }
 
-    /**
-     * get all prices of all products, in the product currencies, and convert them into order currency, calculating total amount.
-     * @param products from which calculate the price based on its currencies
-     * @param currency in which calculate the final order price.
-     * @return the total amount.
-     */
-    private BigDecimal getPriceInOrderCurrency(List<ExistingProductDto> products, String currency) {
-        final CurrencyConversion priceToOrderCurrency = MonetaryConversions.getConversion(currency);
-
-        return products.stream()
-                .map(product -> Monetary.getDefaultAmountFactory().setCurrency(product.getCurrency()).setNumber(product.getPrice()).create())
-                .map(priceInProductCurrency -> priceInProductCurrency.with(priceToOrderCurrency))
-                .map(priceInOrderCurrency -> BigDecimal.valueOf(priceInOrderCurrency.getNumber().doubleValue()).setScale(4, RoundingMode.HALF_UP))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     @Transactional
     public Page<OrderDto> get(final LocalDateTime date) {
         return orderPort.get(date);
+    }
+
+    /*
+     Recover method when retries are exhausted for create a new order
+     */
+    @Recover
+    public static Optional<ExistingProductDto> recoverCreate(final List<ExistingProductDto> products, final NewOrderDto newOrderDto) {
+        LOGGER.error("Retries exhausted by ObjectOptimisticLockingFailureException when Creating Order {} with {}", newOrderDto, products);
+        return Optional.empty();
     }
 }

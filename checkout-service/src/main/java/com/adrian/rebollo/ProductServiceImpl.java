@@ -54,14 +54,20 @@ public class ProductServiceImpl implements ProductService {
         return productPort.update(existingProductDto);
     }
 
+    /*
+     Recover method when retries are exhausted for create a new product
+     */
     @Recover
-    public static Optional<ExistingProductDto> getRecoveryStatus(final ProductDto productDto) {
+    public static Optional<ExistingProductDto> recoverCreate(final ProductDto productDto) {
         LOGGER.error("Retries exhausted by ObjectOptimisticLockingFailureException when Creating a new Product {}", productDto);
         return Optional.empty();
     }
 
+    /*
+     Recover method when retries are exhausted for update product
+     */
     @Recover
-    public static Optional<ExistingProductDto> getRecoveryStatus(final ExistingProductDto existingProductDto) {
+    public static Optional<ExistingProductDto> recoverUpdate(final ExistingProductDto existingProductDto) {
         LOGGER.error("Retries exhausted by ObjectOptimisticLockingFailureException when Updating Product {}", existingProductDto);
         return Optional.empty();
     }
