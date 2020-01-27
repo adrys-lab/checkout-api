@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.UUID;
 import javax.validation.metadata.ConstraintDescriptor;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.validator.internal.engine.DefaultClockProvider;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -17,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.adrian.rebollo.dto.order.NewOrderDto;
-import com.adrian.rebollo.validator.annotation.ValidNewOrder;
 
 public class NewOrderValidatorTest {
 
@@ -27,8 +27,6 @@ public class NewOrderValidatorTest {
     private NewOrderValidator newOrderValidator;
 
     @Mock
-    private ValidNewOrder validNewOrder;
-    @Mock
     private CurrencyValidator currencyValidator;
 
     private ConstraintValidatorContextImpl constraintValidatorContext;
@@ -36,7 +34,7 @@ public class NewOrderValidatorTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        newOrderValidator.initialize(validNewOrder);
+        newOrderValidator = new NewOrderValidator(currencyValidator, EmailValidator.getInstance());
         constraintValidatorContext = new ConstraintValidatorContextImpl(Collections.emptyList(), DefaultClockProvider.INSTANCE, PathImpl.createRootPath(), Mockito.mock(ConstraintDescriptor.class), new Object());
     }
 

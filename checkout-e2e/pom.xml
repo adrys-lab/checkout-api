@@ -59,34 +59,48 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
+    <profiles>
+        <profile>
+            <id>e2e-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <!-- locally overriding failsafe version that currently works with junit 5 jupiter -->
+                        <version>2.19.1</version>
+                        <!-- custom provider dependencies -->
+                        <!-- needed until this gets addressed: https://issues.apache.org/jira/browse/SUREFIRE-1206 -->
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.junit.platform</groupId>
+                                <artifactId>junit-platform-surefire-provider</artifactId>
+                                <version>1.0.3</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.junit.jupiter</groupId>
+                                <artifactId>junit-jupiter-engine</artifactId>
+                                <version>5.0.3</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                         <configuration>
-                            <rules>
-                                <bannedDependencies>
-                                    <excludes>
-                                        <!-- This jar should never reference any of the other modules in the service -->
-                                        <exclude>${project.parent.groupId}:${project.parent.artifactId}*</exclude>
-                                    </excludes>
-                                    <includes>
-                                        <include>${project.parent.groupId}:${project.parent.artifactId}-core</include>
-                                    </includes>
-                                </bannedDependencies>
-                            </rules>
-                            <fail>true</fail>
+                            <skipITs>false</skipITs>
+                            <includes>
+                                <include>**/*E2E.java</include>
+                            </includes>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

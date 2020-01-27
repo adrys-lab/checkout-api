@@ -24,7 +24,7 @@ public class NewOrderValidator extends AbstractValidator implements ConstraintVa
         this.emailValidator = EmailValidator.getInstance();
     }
 
-    public NewOrderValidator(CurrencyValidator currencyValidator, EmailValidator emailValidator) {
+    public NewOrderValidator(final CurrencyValidator currencyValidator, final EmailValidator emailValidator) {
         this.currencyValidator = currencyValidator;
         this.emailValidator = emailValidator;
     }

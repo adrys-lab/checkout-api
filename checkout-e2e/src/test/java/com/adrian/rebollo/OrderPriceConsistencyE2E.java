@@ -50,13 +50,13 @@ class OrderPriceConsistencyE2E {
         firstProduct = productRepository.saveAndFlush(firstProduct);
         originalSecondProduct = productRepository.saveAndFlush(originalSecondProduct);
 
-        Resource<OrderDto> firstOrder = orderController.create(new NewOrderDto("EUR", "email", Arrays.asList(firstProduct.getId(), originalSecondProduct.getId())));
+        Resource<OrderDto> firstOrder = orderController.create(new NewOrderDto("EUR", "email@email.com", Arrays.asList(firstProduct.getId(), originalSecondProduct.getId())));
 
         assertNotNull(firstOrder.getContent());
 
         OrderDto savedOrder = firstOrder.getContent();
         assertEquals(30.0, savedOrder.getPrice().doubleValue(), 1.0);
-        assertEquals(savedOrder.getCurrency(), "EUR");
+        assertEquals("EUR", savedOrder.getCurrency());
 
         Product updatedSecondProduct = new Product(SECOND_ID, 1, "anotherName", 5.0, "USD");
 
@@ -70,7 +70,7 @@ class OrderPriceConsistencyE2E {
 
         OrderDto retrievedOrder = anotherFirstOrder.get().findFirst().get();
         assertEquals(30.0, retrievedOrder.getPrice().doubleValue(), 1.0);
-        assertEquals(retrievedOrder.getCurrency(), "EUR");
+        assertEquals("EUR", retrievedOrder.getCurrency());
         assertTrue(retrievedOrder.getProductList().stream().anyMatch(prod -> prod.getPrice() == 20.0));
         assertTrue(retrievedOrder.getProductList().stream().anyMatch(prod -> prod.getPrice() == 10.0));
     }

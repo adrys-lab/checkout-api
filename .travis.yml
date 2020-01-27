@@ -1,4 +1,16 @@
 language: java
 jdk:
   - oraclejdk11
-script: mvn clean verify -DskipITTests=false -Dskip.unit.tests=false
+
+jobs:
+  include:
+    - stage: Compile
+      script: mvn clean compile -DskipITTests=true -Dskip.unit.tests=true
+    - stage: Unit Tests
+      script: mvn clean package -DskipITTests=true -Dskip.unit.tests=false
+    - stage: Integration Tests
+      script: mvn clean verify -DskipITTests=false -Dskip.unit.tests=true
+    - stage: E2E Tests
+      script: mvn clean verify -Pe2e-tests -Dskip.unit.tests=true
+    - stage: Package
+      script: mvn clean package -DskipITTests=true -Dskip.unit.tests=true
