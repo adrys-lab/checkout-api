@@ -148,7 +148,7 @@
 ## Testing
 * jacoco plugin added to configure coverages/acceptance criteria around CI builds.
 * note about 
-* All tests combined (Integration + Unit) provide a coverage of 93% of classes and 96% of lines and methods.
+* All tests combined (Integration + Unit) provide a coverage of ~ 80% (lines and methods).
 * Testing has been developed at same time than development.
 
 ![Coverage](./pic/coverage.png?raw=false "Coverage")
